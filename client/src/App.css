@@ -1,0 +1,9 @@
+/* client/src/App.css */
+
+/* We want to reset this file so it doesn't interfere with our custom Global.css */
+/* Leave this empty or add only this: */
+
+.app-container {
+    width: 100%;
+    min-height: 100vh;
+}

@@ -1,0 +1,52 @@
+.vm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+/* 🔒 CONSTRAIN VIDEO INSIDE SCREEN */
+.vm-box {
+    width: 90%;
+    max-width: 900px;
+    max-height: 85vh;          /* 🔥 IMPORTANT */
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: 16px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* VIDEO NEVER OVERFLOWS */
+.vm-player {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;       /* 🔥 KEY FIX */
+    border-radius: 16px;
+}
+
+/* CLOSE BUTTON */
+.vm-close-btn {
+    position: absolute;
+    top: -45px;
+    right: 0;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid #fff;
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* MOBILE FIX */
+@media (max-width: 768px) {
+    .vm-box {
+        max-height: 70vh;
+    }
+}
