@@ -75,22 +75,35 @@ const ContactPage = () => {
             <section className="contact-section contact-anim">
                 <div className="contact-grid">
                     
-                    {/* INFO CARD */}
-                    <div className="info-card">
-                        <h3>Contact Info</h3>
-                        <div className="info-item">
-                            <span className="icon">📍</span>
-                            <p><strong>Headquarters</strong><br/>123 Innovation Dr, Tech City, CA</p>
-                        </div>
-                        <div className="info-item">
-                            <span className="icon">📧</span>
-                            <p><strong>Email Us</strong><br/>support@vizcard.com</p>
-                        </div>
-                        <div className="info-item">
-                            <span className="icon">📱</span>
-                            <p><strong>Phone</strong><br/>+1 (800) 555-0199</p>
-                        </div>
-                    </div>
+                   {/* INFO CARD */}
+<div className="info-card">
+    <h3>Contact Info</h3>
+
+    <div className="info-item">
+        <span className="icon">📍</span>
+        <p>
+            <strong>Location</strong><br />
+            Punjab, India
+        </p>
+    </div>
+
+    <div className="info-item">
+        <span className="icon">📧</span>
+        <p>
+            <strong>Email Us</strong><br />
+            support@vizcard.com
+        </p>
+    </div>
+
+    <div className="info-item">
+        <span className="icon">📱</span>
+        <p>
+            <strong>Phone</strong><br />
+            +91 98765-43210
+        </p>
+    </div>
+</div>
+
 
                     {/* FORM CARD */}
                     <div className="form-card">
