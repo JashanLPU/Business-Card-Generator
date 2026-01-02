@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Navbar from './Navbar'; // ✅ The New Component
 import './Global.css'; 
 import './About.css';  
 import videoBg from '../../background.mp4';
@@ -13,11 +14,6 @@ const LandingPage = () => {
         const x = (e.clientX / window.innerWidth - 0.5) * 15;
         const y = (e.clientY / window.innerHeight - 0.5) * 15;
         setOffset({ x, y });
-    };
-
-    const handleLogout = () => {
-        localStorage.removeItem("userId");
-        navigate('/');
     };
 
     // Scroll Animation Observer
@@ -41,18 +37,7 @@ const LandingPage = () => {
                 <source src={videoBg} type="video/mp4" />
             </video>
 
-            {/* SIMPLE FIXED NAVBAR */}
-           
-<nav className="about-navbar">
-                <div className="about-logo">VizCard 3D</div>
-                <div className="about-nav-links">
-                    <NavLink to="/about" className="about-link active">About</NavLink>
-                    <NavLink to="/dashboard" className="about-link">Dashboard</NavLink>
-                    <NavLink to="/contact" className="about-link">Contact</NavLink>
-                    <button className="about-btn-logout" onClick={handleLogout}>Log Out</button>
-                </div>
-            </nav>
-
+            <Navbar /> {/* ✅ Replaced Hardcoded Nav */}
 
             {/* Hero Section */}
             <section className="about-hero about-anim">

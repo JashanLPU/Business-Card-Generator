@@ -1,11 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&display=swap');
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     font-family: 'Inter', sans-serif;
     color: white;
-    background-color: transparent !important; /* Important for video */
+    background-color: transparent !important;
     overflow-x: hidden;
 }
 
@@ -14,5 +15,5 @@ body {
     position: fixed; top: 0; left: 0;
     width: 100vw; height: 100vh;
     object-fit: cover; z-index: -100;
-    filter: brightness(0.4); /* Darkens video so text is readable */
+    filter: brightness(0.4);
 }

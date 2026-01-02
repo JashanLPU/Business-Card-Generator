@@ -1,45 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, NavLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import Navbar from './Navbar'; // ✅ The New Component
 import './Global.css'; 
 import './Contact.css';  
 import videoBg from '../../background.mp4';
+import axios from 'axios';
+import API from "../../config/api";
 
 const ContactPage = () => {
-    const navigate = useNavigate();
     const [formData, setFormData] = useState({ name: '', email: '', message: '' });
     const [submitted, setSubmitted] = useState(false);
 
-    // Mouse Parallax
-    const [offset, setOffset] = useState({ x: 0, y: 0 });
     const handleMouseMove = (e) => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 10;
-        const y = (e.clientY / window.innerHeight - 0.5) * 10;
-        setOffset({ x, y });
+        const content = document.querySelector('.hero-content');
+        if(content) {
+            const x = (e.clientX / window.innerWidth - 0.5) * 10;
+            const y = (e.clientY / window.innerHeight - 0.5) * 10;
+            content.style.transform = `translate(${x}px, ${y}px)`;
+        }
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem("userId");
-        navigate('/');
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Simulate API call
-        setSubmitted(true);
-        setTimeout(() => setSubmitted(false), 3000);
-        setFormData({ name: '', email: '', message: '' });
+        try {
+            // Optional: Backend Call
+            // await axios.post(`${API}/contact`, formData);
+            setSubmitted(true);
+            setTimeout(() => setSubmitted(false), 3000);
+            setFormData({ name: '', email: '', message: '' });
+        } catch (err) {
+            alert("Error sending message");
+        }
     };
-
-    // Animation Observer
-    useEffect(() => {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('visible');
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.contact-anim').forEach((el) => observer.observe(el));
-        return () => observer.disconnect();
-    }, []);
 
     return (
         <div className="contact-wrapper" onMouseMove={handleMouseMove}>
@@ -48,20 +39,11 @@ const ContactPage = () => {
                 <source src={videoBg} type="video/mp4" />
             </video>
 
-            {/* UNIFIED NAVBAR */}
-            <nav className="contact-navbar">
-                <div className="contact-logo">VizCard 3D</div>
-                <div className="contact-nav-links">
-                    <NavLink to="/about" className="contact-link">About</NavLink>
-                    <NavLink to="/dashboard" className="contact-link">Dashboard</NavLink>
-                    <NavLink to="/contact" className="contact-link active">Contact</NavLink>
-                    <button className="contact-btn-logout" onClick={handleLogout}>Log Out</button>
-                </div>
-            </nav>
+            <Navbar /> {/* ✅ Replaced Hardcoded Nav */}
 
             {/* HERO SECTION */}
-            <section className="contact-hero contact-anim">
-                <div className="hero-content" style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}>
+            <section className="contact-hero contact-anim visible">
+                <div className="hero-content">
                     <div className="matte-badge"><span>24/7 Support</span></div>
                     <h1 className="contact-title">Let's Start a <br/><span className="contact-gradient">Conversation.</span></h1>
                     <p className="contact-desc">
@@ -72,38 +54,25 @@ const ContactPage = () => {
             </section>
 
             {/* CONTACT FORM SECTION */}
-            <section className="contact-section contact-anim">
+            <section className="contact-section contact-anim visible">
                 <div className="contact-grid">
                     
                    {/* INFO CARD */}
-<div className="info-card">
-    <h3>Contact Info</h3>
-
-    <div className="info-item">
-        <span className="icon">📍</span>
-        <p>
-            <strong>Location</strong><br />
-            Punjab, India
-        </p>
-    </div>
-
-    <div className="info-item">
-        <span className="icon">📧</span>
-        <p>
-            <strong>Email Us</strong><br />
-            support@vizcard.com
-        </p>
-    </div>
-
-    <div className="info-item">
-        <span className="icon">📱</span>
-        <p>
-            <strong>Phone</strong><br />
-            +91 98765-43210
-        </p>
-    </div>
-</div>
-
+                    <div className="info-card">
+                        <h3>Contact Info</h3>
+                        <div className="info-item">
+                            <span className="icon">📍</span>
+                            <p><strong>Location</strong><br />Punjab, India</p>
+                        </div>
+                        <div className="info-item">
+                            <span className="icon">📧</span>
+                            <p><strong>Email Us</strong><br />support@vizcard.com</p>
+                        </div>
+                        <div className="info-item">
+                            <span className="icon">📱</span>
+                            <p><strong>Phone</strong><br />+91 98765-43210</p>
+                        </div>
+                    </div>
 
                     {/* FORM CARD */}
                     <div className="form-card">

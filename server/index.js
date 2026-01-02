@@ -1,61 +1,104 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const os = require('os');
+const Razorpay = require('razorpay');
+const crypto = require('crypto');
+require('dotenv').config(); 
+
 const app = express();
 
+// Middleware
 app.use(express.json());
-// Allow ANY device to connect
-app.use(cors({ origin: '*', methods: ['GET', 'POST', 'DELETE'] }));
+app.use(cors({
+    origin: ["https://vizcard-app.vercel.app", "http://localhost:5173"], 
+    methods: ["POST", "GET", "PUT", "DELETE"],
+    credentials: true
+}));
 
-mongoose.connect('mongodb://127.0.0.1:27017/vizcard')
+// Database Connection
+// ⚠️ You MUST set MONGO_URI in Vercel settings (127.0.0.1 won't work on cloud)
+mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("✅ MongoDB Connected"))
     .catch(err => console.error("❌ MongoDB Error:", err));
 
-// --- SMART IP FINDER (Ignores Virtual Adapters) ---
-function getLocalIpAddress() {
-    const interfaces = os.networkInterfaces();
-    let bestMatch = 'localhost';
+// Import Models
+const User = require('./models/User');
+const Card = require('./models/Card');
 
-    for (const name of Object.keys(interfaces)) {
-        for (const iface of interfaces[name]) {
-            // Skip internal (localhost) and non-IPv4
-            if (iface.family === 'IPv4' && !iface.internal) {
-                
-                // IGNORE VirtualBox / VMware IPs (usually 192.168.56.x)
-                if (iface.address.startsWith('192.168.56.')) {
-                    continue; 
-                }
+// 🔒 RAZORPAY CONFIG (Hardcoded Keys Restored)
+const razorpay = new Razorpay({
+    key_id: "rzp_test_Ruf0QnWdRTCqcs", 
+    key_secret: "n0EjlUB5PjAaW8EGoRYGwvhn"
+});
 
-                // PREFER Standard Home Wi-Fi (192.168.1.x or 192.168.0.x)
-                if (iface.address.startsWith('192.168.1.') || iface.address.startsWith('192.168.0.')) {
-                    return iface.address; // Return immediately if found
-                }
+// --- ROUTES ---
 
-                bestMatch = iface.address; // Keep as backup
-            }
-        }
+app.get('/', (req, res) => {
+    res.send("VizCard Server is Running");
+});
+// ... existing create-card route ...
+
+// ✅ NEW: Update Card Route
+app.put('/update-card/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        // Update the card with new data coming from frontend
+        await Card.findByIdAndUpdate(id, req.body); 
+        res.json({ status: "ok" });
+    } catch (err) {
+        res.status(500).json({ status: "error", message: "Could not update card" });
     }
-    return bestMatch;
-}
-
-const UserSchema = new mongoose.Schema({ username: String, email: { type: String, unique: true }, password: String });
-const User = mongoose.model('User', UserSchema);
-
-const CardSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    fullName: String, jobTitle: String, company: String, email: String, phone: String, website: String, template: String, cardColor: String, textColor: String
-});
-const Card = mongoose.model('Card', CardSchema);
-
-// API to send the Correct IP to the Frontend
-app.get('/get-network-ip', (req, res) => {
-    const ip = getLocalIpAddress();
-    console.log("📡 Client requested IP. Sending:", ip);
-    res.json({ ip: ip });
 });
 
-// PUBLIC VIEW ENDPOINT (Vital for Phone Access)
+// ... existing get-cards route ...
+// GET USER
+app.get('/get-user/:id', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if(user) {
+            res.json({ status: 'ok', user: { 
+                name: user.name, 
+                email: user.email, 
+                isMember: user.isMember, 
+                planType: user.planType 
+            }});
+        } else {
+            res.json({ status: 'error' });
+        }
+    } catch(err) { res.json({ status: 'error' }); }
+});
+
+// AUTH
+app.post('/register', async (req, res) => { 
+    try { 
+        const { username, email, password } = req.body;
+        const user = await User.create({ name: username, email, password }); 
+        res.json({ status: 'ok', user }); 
+    } catch (err) { 
+        res.json({ status: 'error', error: "Email already exists" }); 
+    } 
+});
+
+app.post('/login', async (req, res) => { 
+    const user = await User.findOne({ email: req.body.email, password: req.body.password }); 
+    if (user) { 
+        res.json({ status: 'ok', userId: user._id }); 
+    } else { 
+        res.json({ status: 'error', message: "Invalid credentials" }); 
+    } 
+});
+
+// CARD ROUTES
+app.post('/create-card', async (req, res) => { 
+    try { await Card.create(req.body); res.json({ status: "ok" }); } 
+    catch (err) { res.status(500).json({ status: "error" }); } 
+});
+
+app.get('/get-cards/:userId', async (req, res) => { 
+    try { const cards = await Card.find({ userId: req.params.userId }); res.json({ status: "ok", cards }); } 
+    catch (err) { res.status(500).json({ status: "error" }); } 
+});
+
 app.get('/get-card-public/:id', async (req, res) => {
     try {
         const card = await Card.findById(req.params.id);
@@ -64,18 +107,42 @@ app.get('/get-card-public/:id', async (req, res) => {
     } catch (err) { res.status(500).json({ status: "error", message: "Server Error" }); }
 });
 
-app.post('/register', async (req, res) => { try { const user = await User.create(req.body); res.json({ status: 'ok', user }); } catch (err) { res.json({ status: 'error', error: "Email already exists" }); } });
-app.post('/login', async (req, res) => { const user = await User.findOne({ email: req.body.email, password: req.body.password }); if (user) { res.json({ status: 'ok', userId: user._id }); } else { res.json({ status: 'error', message: "Invalid credentials" }); } });
-app.post('/create-card', async (req, res) => { try { await Card.create(req.body); res.json({ status: "ok" }); } catch (err) { res.status(500).json({ status: "error" }); } });
-app.get('/get-cards/:userId', async (req, res) => { try { const cards = await Card.find({ userId: req.params.userId }); res.json({ status: "ok", cards }); } catch (err) { res.status(500).json({ status: "error" }); } });
-app.delete('/delete-card/:id', async (req, res) => { await Card.findByIdAndDelete(req.params.id); res.json({ status: "ok" }); });
-
-const PORT = 5000;
-const networkIP = getLocalIpAddress();
-
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`\n✅ Server Running!`);
-    console.log(`👉 Laptop Access:   http://localhost:${PORT}`);
-    console.log(`👉 Phone Access:    http://${networkIP}:${PORT}`); // This should now show 192.168.1.58
-    console.log(`\nIgnore the 192.168.56.1 if you see it elsewhere.\n`);
+app.delete('/delete-card/:id', async (req, res) => { 
+    await Card.findByIdAndDelete(req.params.id); 
+    res.json({ status: "ok" }); 
 });
+
+// PAYMENT - Create Order
+app.post('/create-order', async (req, res) => {
+    try {
+        const options = {
+            amount: req.body.amount, 
+            currency: "INR",
+            receipt: crypto.randomBytes(10).toString("hex"),
+        };
+        const order = await razorpay.orders.create(options);
+        res.json(order);
+    } catch (error) { res.status(500).send("Error creating order"); }
+});
+
+// PAYMENT - Verify (Hardcoded Secret Restored)
+app.post('/verify-membership', async (req, res) => {
+    const { userId, planType, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    
+    // Using your hardcoded Secret here:
+    const expectedSignature = crypto
+        .createHmac('sha256', "n0EjlUB5PjAaW8EGoRYGwvhn") 
+        .update(body.toString())
+        .digest('hex');
+
+    if (expectedSignature === razorpay_signature) {
+        await User.findByIdAndUpdate(userId, { isMember: true, planType: planType });
+        res.json({ status: 'ok' });
+    } else {
+        res.json({ status: 'error' });
+    }
+});
+
+// EXPORT FOR VERCEL
+module.exports = app;

@@ -1,0 +1,167 @@
+/* src/components/Home/Subscription.css */
+
+.sub-header {
+    text-align: center;
+    margin-top: 150px; /* Clears Navbar */
+    margin-bottom: 60px;
+    position: relative;
+    z-index: 10;
+}
+
+.sub-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    color: #fff;
+    margin-bottom: 10px;
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+}
+
+.sub-desc {
+    font-family: 'Outfit', sans-serif;
+    color: #aaa;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+}
+
+.pricing-container {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    flex-wrap: wrap;
+    padding: 0 20px;
+    max-width: 1200px;
+    margin: 0 auto 100px;
+    position: relative;
+    z-index: 10;
+}
+
+/* --- GLASS CARD --- */
+.price-card {
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    padding: 50px 40px;
+    width: 350px;
+    text-align: center;
+    transition: 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.price-card:hover {
+    transform: translateY(-15px);
+    background: rgba(30, 30, 30, 0.8);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+}
+
+/* LIFETIME CARD (GOLD GLOW) */
+.price-card.premium {
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.1);
+}
+.price-card.premium:hover {
+    box-shadow: 0 0 60px rgba(255, 215, 0, 0.2);
+    border-color: #FFD700;
+}
+
+/* --- TEXT STYLES --- */
+.plan-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+.price {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    color: #fff;
+    margin-bottom: 30px;
+}
+.price span {
+    font-size: 1rem;
+    color: #888;
+    font-family: 'Outfit', sans-serif;
+}
+
+.premium .price { color: #FFD700; }
+
+/* --- FEATURES LIST --- */
+.features {
+    list-style: none;
+    text-align: left;
+    margin-bottom: 40px;
+    padding: 0 10px;
+}
+.features li {
+    color: #ccc;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.features li span { color: #4ade80; } /* Checkmark Color */
+
+/* --- BUTTONS --- */
+.sub-btn {
+    width: 100%;
+    padding: 18px;
+    border-radius: 50px;
+    border: none;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* Standard Button */
+.sub-btn.standard {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.sub-btn.standard:hover {
+    background: #fff;
+    color: #000;
+}
+
+/* Gold Button */
+.sub-btn.gold {
+    background: linear-gradient(135deg, #FFD700, #B8860B);
+    color: #000;
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+}
+.sub-btn.gold:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 50px rgba(255, 215, 0, 0.5);
+}
+
+/* --- BADGE --- */
+.best-value {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #FFD700;
+    color: #000;
+    font-weight: 800;
+    font-size: 0.7rem;
+    padding: 5px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+    .sub-title { font-size: 3rem; }
+    .pricing-container { flex-direction: column; align-items: center; }
+    .price-card { width: 100%; max-width: 400px; }
+}
