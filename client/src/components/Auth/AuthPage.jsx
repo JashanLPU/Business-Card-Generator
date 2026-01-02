@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import API from "../../config/api"; // ✅ 1. Import this!
 import './AuthForms.css';
 import videoBg from '../../background.mp4';
 
@@ -9,7 +10,7 @@ const AuthPage = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({ username: '', email: '', password: '' });
 
-    const API_URL = `http://${window.location.hostname}:5000`;
+    // ❌ DELETE THIS LINE: const API_URL = `http://${window.location.hostname}:5000`;
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -17,7 +18,9 @@ const AuthPage = () => {
         e.preventDefault();
         const endpoint = type === 'register' ? '/register' : '/login';
         try {
-            const res = await axios.post(`${API_URL}${endpoint}`, formData);
+            // ✅ 2. Use the imported API variable here
+            const res = await axios.post(`${API}${endpoint}`, formData);
+            
             if (res.data.status === 'ok') {
                 if (type === 'login') {
                     localStorage.setItem('userId', res.data.userId);
