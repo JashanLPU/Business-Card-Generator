@@ -6,6 +6,6 @@ const isLocal = window.location.hostname === "localhost";
 // ✅ NEW/CORRECT: Paste your ACTUAL Server URL from Vercel below (without :5000)
 const API = isLocal 
     ? "http://localhost:5000" 
-    : "https://business-card-generator-psi-one.vercel.app/"; 
+    : "https://business-card-generator-psi-one.vercel.app"; 
 
 export default API;
