@@ -9,8 +9,9 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+// Inside server/index.js
 app.use(cors({
-    origin: ["https://vizcard-app.vercel.app", "http://localhost:5173"], 
+    origin: "*",  // ✅ Allow any domain to connect (easiest for setup)
     methods: ["POST", "GET", "PUT", "DELETE"],
     credentials: true
 }));
